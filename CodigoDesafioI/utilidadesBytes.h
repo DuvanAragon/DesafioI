@@ -2,5 +2,6 @@
 #define UTILIDADESBYTES_H
 
 void separarBytes(unsigned short valor, unsigned char& byteBajo, unsigned char& byteAlto);
+unsigned short unirBytes(unsigned char byteBajo, unsigned char byteAlto);
 
 #endif // UTILIDADESBYTES_H

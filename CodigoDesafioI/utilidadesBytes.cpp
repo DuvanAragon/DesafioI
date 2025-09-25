@@ -5,3 +5,10 @@ void separarBytes(unsigned short valor, unsigned char& byteBajo, unsigned char& 
     byteBajo = static_cast<unsigned char>(valor & 255);
     byteAlto = static_cast<unsigned char>((valor >> 8) & 255);
 }
+
+unsigned short unirBytes(unsigned char byteBajo, unsigned char byteAlto)
+{
+    unsigned short bytesCombinados  = (byteAlto << 8) | byteBajo;
+
+    return bytesCombinados;
+}
