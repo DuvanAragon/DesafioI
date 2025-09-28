@@ -26,3 +26,35 @@ bool compararCadenas(const char* cadenaA, int longitudCadenaA, const char* caden
 
     return true;
 }
+
+
+bool buscarSubcadena(const char* cadenaPrincipal, const char* subcadena) {
+
+    if (subcadena[0] == '\0') {
+        return true;
+    }
+
+    for (int i = 0; cadenaPrincipal[i] != '\0'; i++) {
+        bool encontrada = true;
+
+        for (int j = 0; subcadena[j] != '\0'; j++) {
+            if (cadenaPrincipal[i + j] == '\0') {
+                encontrada = false;
+                break;
+            }
+
+            if (cadenaPrincipal[i + j] != subcadena[j]) {
+                encontrada = false;
+                break;
+            }
+        }
+
+        if (encontrada) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+

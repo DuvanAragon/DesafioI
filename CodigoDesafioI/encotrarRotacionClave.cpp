@@ -1,7 +1,6 @@
 #include "encotrarRotacionClave.h"
 #include "utilidadesBytes.h"
 
-// Valida solo letras A-Z, a-z y dígitos 0-9
 bool caracterValido(unsigned char caracter) {
     if (caracter >= 'a' && caracter <= 'z') return true;
     if (caracter >= 'A' && caracter <= 'Z') return true;
