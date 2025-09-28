@@ -8,13 +8,10 @@ bool caracterValido(unsigned char caracter) {
     return false;
 }
 
-
-bool RotacionClaveValida(unsigned char* textoCifrado, int tamanoTextoCifrado, unsigned char& posibleClave, int* rotacionCandidata)
+bool RotacionClaveValida(unsigned char* textoCifrado, int tamanoTextoCifrado, unsigned char& posibleClave, int* rotacionCandidata, int claveInicial)
 {
-
     for (int paso = 0; paso < 2; paso++) {
-        for (int k = 0; k < 256; k++) {
-
+        for (int k = claveInicial; k < 256; k++) {
             if (paso == 0) {
                 posibleClave = textoCifrado[2];
             } else {
@@ -35,31 +32,31 @@ bool RotacionClaveValida(unsigned char* textoCifrado, int tamanoTextoCifrado, un
                 unsigned char valor = textoCifrado[idx];
                 unsigned char byteXor = static_cast<unsigned char>(valor ^ posibleClave);
 
-                int nuevas[7];
-                int nuevasCount = 0;
+                int rotacionesValidas[7];
+                int cantidadValidas = 0;
 
                 for (int j = 0; j < numeroRotado; j++) {
                     int n = rotacionCandidata[j];
                     unsigned char rotado = rotacionBytsDerecha(byteXor, n);
 
                     if (caracterValido(rotado)) {
-                        nuevas[nuevasCount++] = n;
+                        rotacionesValidas[cantidadValidas] = n;
+                        cantidadValidas++;
                     }
                 }
 
-                if (nuevasCount == 0) {
+                if (cantidadValidas == 0) {
                     claveValida = false;
                     break;
                 }
 
-                numeroRotado = nuevasCount;
-                for (int j = 0; j < nuevasCount; j++) {
-                    rotacionCandidata[j] = nuevas[j];
+                numeroRotado = cantidadValidas;
+                for (int j = 0; j < cantidadValidas; j++) {
+                    rotacionCandidata[j] = rotacionesValidas[j];
                 }
             }
 
             if (claveValida && numeroRotado > 0) {
-
                 int rotFinal = rotacionCandidata[0];
                 rotacionCandidata[0] = rotFinal;
                 for (int j = 1; j < 7; j++) rotacionCandidata[j] = 0;

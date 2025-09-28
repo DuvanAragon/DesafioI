@@ -13,7 +13,7 @@ int main() {
     cin >> n;
 
     for (int caso = 1; caso <= n; caso++) {
-        cout << "\n=== Archivo Encriptado " << caso << " ===\n\n";
+        cout << "\n=== Archivo Encriptado " << caso << " ===\n";
 
         char rutaPista[100];
         char rutaCifrado[100];
@@ -29,8 +29,9 @@ int main() {
         }
 
         char* pista = new char[tamanoPista + 1];
-        for (int i = 0; i < tamanoPista; i++)
+        for (int i = 0; i < tamanoPista; i++){
             pista[i] = static_cast<char>(pistaBytes[i]);
+        }
         pista[tamanoPista] = '\0';
         delete[] pistaBytes;
 
@@ -44,64 +45,63 @@ int main() {
 
         unsigned char clave = 0;
         int rotaciones[7] = {0};
-        if (!RotacionClaveValida(cifrado, tamanoCifrado, clave, rotaciones)) {
-            cerr << "No se pudo determinar clave/rotacion.\n";
-            delete[] pista;
-            delete[] cifrado;
-            continue;
-        }
-        int rot = rotaciones[0];
-        cout << "Clave XOR: " << static_cast<int>(clave) << " | Rotacion: " << rot << "\n";
-
-        unsigned char* descCifrado = new unsigned char[tamanoCifrado];
-        for (int i = 0; i < tamanoCifrado; i++) {
-            unsigned char x = cifrado[i] ^ clave;
-            descCifrado[i] = rotacionBytsDerecha(x, rot);
-        }
-
+        int keyInicial = 0;
         bool encontrado = false;
 
-        char* descomprimidoRLE = descompresionRLE(descCifrado, tamanoCifrado);
-        if (descomprimidoRLE) {
-            if (buscarSubcadena(descomprimidoRLE, pista)) {
-                cout << "La pista fue encontrada con RLE.\n\n";
-                cout << "----- Texto descomprimido (RLE) -----\n";
-                cout << descomprimidoRLE << "\n";
-                cout << "------------------------------------\n";
-                encontrado = true;
-            } else {
-                cout << "No se encontro la pista con RLE.\n";
-            }
-            delete[] descomprimidoRLE;
-        } else {
-            cout << "La descompresion RLE fallo.\n";
-        }
+        while (RotacionClaveValida(cifrado, tamanoCifrado, clave, rotaciones, keyInicial)) {
+            int rot = rotaciones[0];
 
-        if (!encontrado) {
-            int tamDescompLZ = 0;
-            char* descomprimidoLZ = descompresionLZ78(descCifrado, tamanoCifrado, tamDescompLZ);
-            if (descomprimidoLZ && tamDescompLZ > 0) {
-                descomprimidoLZ[tamDescompLZ] = '\0';
-                if (buscarSubcadena(descomprimidoLZ, pista)) {
-                    cout << "La pista fue encontrada con LZ78.\n\n";
-                    cout << "----- Texto descomprimido (LZ78) -----\n";
-                    cout << descomprimidoLZ << "\n";
-                    cout << "-------------------------------------\n";
+            unsigned char* descCifrado = new unsigned char[tamanoCifrado];
+            for (int i = 0; i < tamanoCifrado; i++) {
+                unsigned char x = cifrado[i] ^ clave;
+                descCifrado[i] = rotacionBytsDerecha(x, rot);
+            }
+
+            char* descomprimidoRLE = descompresionRLE(descCifrado, tamanoCifrado);
+            if (descomprimidoRLE) {
+                if (buscarSubcadena(descomprimidoRLE, pista)) {
+                    cout << "Clave XOR en hexadecimal : " << std::hex << static_cast<int>(clave);
+                    cout << "\nRotacion de bytes a la derecha: " << rot << "\n";
+
+                    cout << "La pista fue encontrada con RLE.\n\n";
+                    cout << "----- Texto descomprimido (RLE) -----\n";
+                    cout << descomprimidoRLE << "\n";
+                    cout << "------------------------------------\n";
                     encontrado = true;
-                } else {
-                    cout << "No se encontro la pista con LZ78.\n";
                 }
-                delete[] descomprimidoLZ;
-            } else {
-                cout << "La descompresion LZ78 fallo.\n";
+                delete[] descomprimidoRLE;
             }
+
+            if (!encontrado) {
+                int tamDescompLZ = 0;
+                char* descomprimidoLZ = descompresionLZ78(descCifrado, tamanoCifrado, tamDescompLZ);
+                if (descomprimidoLZ && tamDescompLZ > 0) {
+                    descomprimidoLZ[tamDescompLZ] = '\0';
+                    if (buscarSubcadena(descomprimidoLZ, pista)) {
+                        cout << "Clave XOR en hexadecimal : " << std::hex << static_cast<int>(clave);
+                        cout << "\nRotacion de bytes a la derecha: " << rot << "\n";
+
+                        cout << "La pista fue encontrada con LZ78.\n\n";
+                        cout << "----- Texto descomprimido (LZ78) -----\n";
+                        cout << descomprimidoLZ << "\n";
+                        cout << "-------------------------------------\n";
+                        encontrado = true;
+                    }
+                    delete[] descomprimidoLZ;
+                }
+            }
+
+            delete[] descCifrado;
+
+            if (encontrado) break;
+
+            keyInicial = static_cast<int>(clave) + 1;
         }
 
         if (!encontrado) {
-            cout << "La pista no se encontro en ninguna descompresion.\n";
+            cout << "La pista no se encontro con ninguna clave.\n";
         }
 
-        delete[] descCifrado;
         delete[] cifrado;
         delete[] pista;
     }
