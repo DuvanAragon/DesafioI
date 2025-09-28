@@ -6,7 +6,7 @@ using namespace std;
 
 unsigned char* lecturaArchivos(const char *rutaArchivo, int &tamanoArchivo)
 {
-    ifstream archivo(rutaArchivo);
+    ifstream archivo(rutaArchivo, ios::binary );
 
     if (!archivo.is_open())
     {
