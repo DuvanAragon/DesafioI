@@ -13,7 +13,7 @@ bool RotacionClaveValida(unsigned char* textoCifrado, int tamanoTextoCifrado, un
     for (int paso = 0; paso < 2; paso++) {
         for (int k = claveInicial; k < 256; k++) {
             if (paso == 0) {
-                posibleClave = textoCifrado[2];
+                posibleClave = textoCifrado[0];
             } else {
                 posibleClave = static_cast<unsigned char>(k);
             }
